@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head('My Books')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments :: flash}"></div>
+    <h1>My Books</h1>
+    <p class="muted">Loan period: 14 days. Late fine: ₹5 per day.</p>
+
+    <div class="card table-wrap">
+        <h2>Currently issued</h2>
+        <table>
+            <thead><tr><th>Book</th><th>Issued</th><th>Due</th><th>Status</th><th>Fine so far</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="l : ${active}">
+                <td th:text="${l.book.title}"></td>
+                <td th:text="${#temporals.format(l.issueDate, 'dd MMM yyyy')}"></td>
+                <td th:text="${#temporals.format(l.dueDate, 'dd MMM yyyy')}"></td>
+                <td>
+                    <span class="badge red" th:if="${l.overdueDays > 0}" th:text="'Overdue ' + ${l.overdueDays} + ' day(s)'"></span>
+                    <span class="badge green" th:unless="${l.overdueDays > 0}">On time</span>
+                </td>
+                <td th:text="'₹' + ${l.currentFine}"></td>
+                <td>
+                    <form class="inline" th:action="@{/loans/{id}/return(id=${l.id})}" method="post">
+                        <button class="btn sm" type="submit">Return</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(active)}"><td colspan="6" class="muted">You have no books issued.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card table-wrap">
+        <h2>My reservations</h2>
+        <table>
+            <thead><tr><th>Book</th><th>Reserved on</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="r : ${reservations}">
+                <td th:text="${r.book.title}"></td>
+                <td th:text="${#temporals.format(r.reservedOn, 'dd MMM yyyy')}"></td>
+                <td>
+                    <span class="badge amber" th:if="${r.status.name() == 'ACTIVE'}">Waiting</span>
+                    <span class="badge green" th:if="${r.status.name() == 'FULFILLED'}">Issued to you</span>
+                    <span class="badge gray" th:if="${r.status.name() == 'CANCELLED'}">Cancelled</span>
+                    <span class="muted" th:if="${r.status.name() == 'ACTIVE' and r.book.availableQuantity > 0}">
+                        A copy is available - issue it from the catalogue.
+                    </span>
+                </td>
+                <td>
+                    <form class="inline" th:if="${r.status.name() == 'ACTIVE'}"
+                          th:action="@{/reservations/{id}/cancel(id=${r.id})}" method="post">
+                        <button class="btn bad sm" type="submit">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(reservations)}"><td colspan="4" class="muted">No reservations.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card table-wrap">
+        <h2>History</h2>
+        <table>
+            <thead><tr><th>Book</th><th>Issued</th><th>Returned</th><th>Fine</th></tr></thead>
+            <tbody>
+            <tr th:each="l : ${history}">
+                <td th:text="${l.book.title}"></td>
+                <td th:text="${#temporals.format(l.issueDate, 'dd MMM yyyy')}"></td>
+                <td th:text="${#temporals.format(l.returnDate, 'dd MMM yyyy')}"></td>
+                <td>
+                    <span th:if="${l.fineAmount == 0}" class="muted">-</span>
+                    <span th:if="${l.fineAmount > 0}">
+                        <span th:text="'₹' + ${l.fineAmount}"></span>
+                        <span class="badge green" th:if="${l.finePaid}">Paid</span>
+                        <span class="badge red" th:unless="${l.finePaid}">Unpaid</span>
+                    </span>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(history)}"><td colspan="4" class="muted">Nothing here yet.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

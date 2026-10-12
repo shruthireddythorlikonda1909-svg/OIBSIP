@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Login')}"></head>
+<body>
+<main class="auth card">
+    <h1>📚 Sign in</h1>
+    <div class="alert error" th:if="${param.error}">Invalid email or password, or your account is blocked.</div>
+    <div class="alert success" th:if="${param.logout}">You have been logged out.</div>
+    <div th:replace="~{fragments :: flash}"></div>
+
+    <form th:action="@{/login}" method="post">
+        <label>Email</label>
+        <input type="email" name="email" required autofocus>
+        <label>Password</label>
+        <input type="password" name="password" required>
+        <p><button class="btn" type="submit">Login</button></p>
+    </form>
+    <p class="muted">New member? <a th:href="@{/register}">Create an account</a></p>
+    <p class="muted">Demo admin: admin@library.com / admin123</p>
+</main>
+</body>
+</html>

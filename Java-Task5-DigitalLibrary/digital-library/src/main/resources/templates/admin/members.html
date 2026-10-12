@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head('Members')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments :: flash}"></div>
+    <h1>Members</h1>
+    <div class="card table-wrap">
+        <table>
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="m : ${members}">
+                <td th:text="${m.name}"></td>
+                <td th:text="${m.email}"></td>
+                <td th:text="${m.role}"></td>
+                <td th:text="${#temporals.format(m.createdAt, 'dd MMM yyyy')}"></td>
+                <td>
+                    <span class="badge green" th:if="${m.enabled}">Active</span>
+                    <span class="badge red" th:unless="${m.enabled}">Blocked</span>
+                </td>
+                <td>
+                    <form class="inline" th:if="${m.role.name() == 'USER'}"
+                          th:action="@{/admin/members/{id}/toggle(id=${m.id})}" method="post">
+                        <button class="btn sm" th:classappend="${m.enabled} ? 'bad' : 'ok'" type="submit"
+                                th:text="${m.enabled} ? 'Block' : 'Unblock'">Block</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

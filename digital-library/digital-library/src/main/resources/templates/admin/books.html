@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head('Manage Books')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments :: flash}"></div>
+    <div class="header-row">
+        <h1>Manage Books</h1>
+        <a class="btn" th:href="@{/admin/books/new}">+ Add Book</a>
+    </div>
+    <div class="card table-wrap">
+        <table>
+            <thead><tr><th>Title</th><th>Author</th><th>ISBN</th><th>Category</th><th>Available</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="b : ${books}">
+                <td th:text="${b.title}"></td>
+                <td th:text="${b.author}"></td>
+                <td th:text="${b.isbn}"></td>
+                <td th:text="${b.category}"></td>
+                <td th:text="${b.availableQuantity} + ' / ' + ${b.totalQuantity}"></td>
+                <td>
+                    <a class="btn sec sm" th:href="@{/admin/books/{id}/edit(id=${b.id})}">Edit</a>
+                    <form class="inline" th:action="@{/admin/books/{id}/delete(id=${b.id})}" method="post"
+                          onsubmit="return confirm('Delete this book?');">
+                        <button class="btn bad sm" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(books)}"><td colspan="6" class="muted">No books yet.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head('Contact')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments :: flash}"></div>
+    <h1>Contact the Library</h1>
+    <form class="card form-narrow" th:action="@{/contact}" method="post">
+        <label>Subject</label>
+        <input type="text" name="subject" required maxlength="150">
+        <label>Message</label>
+        <textarea name="message" rows="6" required maxlength="2000"></textarea>
+        <p><button class="btn" type="submit">Send</button></p>
+    </form>
+</main>
+</body>
+</html>

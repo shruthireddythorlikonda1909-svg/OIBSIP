@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head('Fines')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments :: flash}"></div>
+    <h1>Fines</h1>
+    <div class="card table-wrap">
+        <table>
+            <thead><tr><th>Member</th><th>Book</th><th>Due</th><th>Returned</th><th>Days late</th><th>Fine</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            <tr th:each="l : ${loans}">
+                <td th:text="${l.user.name}"></td>
+                <td th:text="${l.book.title}"></td>
+                <td th:text="${#temporals.format(l.dueDate, 'dd MMM yyyy')}"></td>
+                <td th:text="${#temporals.format(l.returnDate, 'dd MMM yyyy')}"></td>
+                <td th:text="${l.overdueDays}"></td>
+                <td th:text="'₹' + ${l.fineAmount}"></td>
+                <td>
+                    <span class="badge green" th:if="${l.finePaid}">Paid</span>
+                    <span class="badge red" th:unless="${l.finePaid}">Unpaid</span>
+                </td>
+                <td>
+                    <form class="inline" th:unless="${l.finePaid}"
+                          th:action="@{/admin/fines/{id}/pay(id=${l.id})}" method="post">
+                        <button class="btn ok sm" type="submit">Mark paid</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(loans)}"><td colspan="8" class="muted">No fines recorded.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head('Catalogue')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments :: flash}"></div>
+    <h1>Book Catalogue</h1>
+
+    <form class="card toolbar" method="get" th:action="@{/books}">
+        <div>
+            <label>Search by title or author</label>
+            <input type="text" name="q" th:value="${q}" placeholder="e.g. Java, Kalam">
+        </div>
+        <div>
+            <label>Category</label>
+            <select name="category">
+                <option value="">All categories</option>
+                <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"
+                        th:selected="${c == category}"></option>
+            </select>
+        </div>
+        <button class="btn" type="submit">Search</button>
+        <a class="btn sec" th:href="@{/books}">Reset</a>
+    </form>
+
+    <div class="card table-wrap">
+        <table>
+            <thead>
+            <tr><th>Title</th><th>Author</th><th>Category</th><th>ISBN</th><th>Available</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="b : ${books}">
+                <td th:text="${b.title}"></td>
+                <td th:text="${b.author}"></td>
+                <td th:text="${b.category}"></td>
+                <td th:text="${b.isbn}"></td>
+                <td>
+                    <span class="badge" th:classappend="${b.availableQuantity > 0} ? 'green' : 'red'"
+                          th:text="${b.availableQuantity} + ' / ' + ${b.totalQuantity}"></span>
+                </td>
+                <td>
+                    <form class="inline" th:if="${b.availableQuantity > 0}"
+                          th:action="@{/books/{id}/issue(id=${b.id})}" method="post">
+                        <button class="btn ok sm" type="submit">Issue</button>
+                    </form>
+                    <form class="inline" th:unless="${b.availableQuantity > 0}"
+                          th:action="@{/books/{id}/reserve(id=${b.id})}" method="post">
+                        <button class="btn sec sm" type="submit">Reserve</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(books)}"><td colspan="6" class="muted">No books found.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: head('Issued Books')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav}"></nav>
+<main class="container">
+    <div th:replace="~{fragments :: flash}"></div>
+    <h1>Issued Books</h1>
+    <div class="card table-wrap">
+        <table>
+            <thead><tr><th>Book</th><th>Member</th><th>Issued</th><th>Due date</th><th>Status</th><th>Fine so far</th></tr></thead>
+            <tbody>
+            <tr th:each="l : ${loans}">
+                <td th:text="${l.book.title}"></td>
+                <td><span th:text="${l.user.name}"></span> <span class="muted" th:text="'(' + ${l.user.email} + ')'"></span></td>
+                <td th:text="${#temporals.format(l.issueDate, 'dd MMM yyyy')}"></td>
+                <td th:text="${#temporals.format(l.dueDate, 'dd MMM yyyy')}"></td>
+                <td>
+                    <span class="badge red" th:if="${l.overdueDays > 0}" th:text="'Overdue ' + ${l.overdueDays} + ' day(s)'"></span>
+                    <span class="badge green" th:unless="${l.overdueDays > 0}">On time</span>
+                </td>
+                <td th:text="'₹' + ${l.currentFine}"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(loans)}"><td colspan="6" class="muted">No books are currently issued.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

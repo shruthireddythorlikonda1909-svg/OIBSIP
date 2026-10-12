@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' | Digital Library'">Digital Library</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="nav" th:fragment="nav">
+    <span class="brand">📚 Digital Library</span>
+
+    <th:block sec:authorize="hasRole('ADMIN')">
+        <a th:href="@{/admin/books}">Books</a>
+        <a th:href="@{/admin/issued}">Issued</a>
+        <a th:href="@{/admin/members}">Members</a>
+        <a th:href="@{/admin/fines}">Fines</a>
+        <a th:href="@{/admin/messages}">Messages</a>
+    </th:block>
+    <th:block sec:authorize="hasRole('USER')">
+        <a th:href="@{/books}">Catalogue</a>
+        <a th:href="@{/my-loans}">My Books</a>
+        <a th:href="@{/contact}">Contact</a>
+    </th:block>
+
+    <span class="spacer"></span>
+    <span class="who" sec:authorize="isAuthenticated()" sec:authentication="name">user</span>
+    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
+        <button class="btn sec sm" type="submit">Logout</button>
+    </form>
+</nav>
+
+<div th:fragment="flash">
+    <div class="alert success" th:if="${success}" th:text="${success}"></div>
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+</div>
+
+</body>
+</html>
